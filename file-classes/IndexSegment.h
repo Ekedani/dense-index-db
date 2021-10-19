@@ -21,11 +21,6 @@ struct SearchResult {
     bool success;
     unsigned int position;
     IndexRecord *value;
-
-    void output() {
-        cout << "Success: " << success << '\n';
-        cout << "Position: " << position << '\n';
-    }
 };
 
 class IndexBlock {
@@ -50,7 +45,12 @@ public:
     bool add(unsigned int keyValue, unsigned int dataPointer){
         auto searchResult = findKey(keyValue);
         if(!searchResult.success){
-
+            auto vecIterator = records.begin() + searchResult.position;
+            if(searchResult.value->keyValue < keyValue) {
+                vecIterator += 1;
+            }
+            auto newRecord = new IndexRecord{keyValue, dataPointer};
+            records.insert(vecIterator, newRecord);
             return true;
         }
         else{
