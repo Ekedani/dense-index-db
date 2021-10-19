@@ -1,6 +1,8 @@
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
@@ -19,45 +21,20 @@ struct SearchResult {
     bool success;
     unsigned int position;
     IndexRecord *value;
+
+    void output() {
+        cout << "Success: " << success << '\n';
+        cout << "Position: " << position << '\n';
+    }
 };
 
 class IndexBlock {
-private:
+public:
+
     vector<IndexRecord *> records;
 
-    SearchResult findKey(unsigned int keyValue) {
-        unsigned int currentState = records.size() / 2 + 1;
-        unsigned int delta = records.size() / 2;
-        SearchResult searchResult{};
-
-        while (delta > 0) {
-            searchResult.position = currentState + delta;
-            unsigned int curKeyValue;
-
-            if (currentState + delta == records.size()) {
-                //Infinity
-                curKeyValue = INT_MAX + 1;
-            } else {
-                curKeyValue = records[currentState + delta]->keyValue;
-            }
-
-            if (curKeyValue == keyValue) {
-                //Successful search
-                searchResult.success = true;
-                searchResult.value = records[searchResult.position];
-                return searchResult;
-            }
-
-            //New search parameters
-            keyValue < curKeyValue ? currentState += (delta / 2 + 1) : currentState -= (delta / 2 + 1);
-            delta /= 2;
-        }
-
-        //Failure
-        searchResult.success = false;
-        searchResult.value = records[searchResult.position];
-        return searchResult;
-    }
+    //Uniform binary search from TAOCP
+    SearchResult findKey(unsigned int keyValue);
 
 public:
     const unsigned int MIN_KEY_VALUE;
