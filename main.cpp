@@ -13,5 +13,8 @@ int main() {
         auto result = testBlock.findKey(j);
         cout << j << " success "  << result.success << '\n';
     }
+    auto result = testBlock.findKey(INT_MAX);
+    auto search = testBlock.get(99);
+    cout << "Search values: " << search->keyValue << " and " << search->dataPointer;
     return 0;
 }

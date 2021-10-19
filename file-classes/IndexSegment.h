@@ -30,9 +30,7 @@ struct SearchResult {
 
 class IndexBlock {
 public:
-
     vector<IndexRecord *> records;
-
     //Uniform binary search from TAOCP
     SearchResult findKey(unsigned int keyValue);
 
@@ -41,7 +39,33 @@ public:
     const unsigned int MAX_KEY_VALUE;
 
     IndexBlock(unsigned int minKeyValue, unsigned int maxKeyValue);
-    //TODO: ADD, GET, EDIT, DELETE
+
+    //Returns pointer to record with given key or nullptr
+    IndexRecord* get(unsigned int keyValue);
+
+    //Returns true if removal is successful
+    bool remove(unsigned int keyValue){
+        auto searchResult = findKey(keyValue);
+        if(searchResult.success){
+
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    //Returns true if insertion is successful
+    bool add(unsigned int keyValue, unsigned int dataPointer){
+        auto searchResult = findKey(keyValue);
+        if(!searchResult.success){
+
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 };
 
 class IndexSegment {

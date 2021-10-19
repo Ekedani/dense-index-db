@@ -39,3 +39,8 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
     searchResult.value = records[searchResult.position];
     return searchResult;
 }
+
+IndexRecord *IndexBlock::get(unsigned int keyValue) {
+    auto searchResult = findKey(keyValue);
+    return searchResult.success ? searchResult.value : nullptr;
+}
