@@ -44,16 +44,7 @@ public:
     IndexRecord* get(unsigned int keyValue);
 
     //Returns true if removal is successful
-    bool remove(unsigned int keyValue){
-        auto searchResult = findKey(keyValue);
-        if(searchResult.success){
-            records.erase(records.begin() + searchResult.position);
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
+    bool remove(unsigned int keyValue);
 
     //Returns true if insertion is successful
     bool add(unsigned int keyValue, unsigned int dataPointer){

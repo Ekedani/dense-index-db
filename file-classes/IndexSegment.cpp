@@ -8,16 +8,16 @@ IndexBlock::IndexBlock(unsigned int minKeyValue, unsigned int maxKeyValue) : MIN
                                                                                          MAX_KEY_VALUE(maxKeyValue) {}
 
 SearchResult IndexBlock::findKey(unsigned int keyValue) {
-    unsigned int currentState = records.size() / 2 + 1;
+    unsigned int currentState = records.size() / 2 + 1 ;
     unsigned int delta = records.size() / 2;
     SearchResult searchResult{};
 
     while (delta >= 0) {
-        searchResult.position = currentState - 1;
+        searchResult.position = currentState ? currentState - 1 : currentState;
         unsigned int curKeyValue;
 
         //Check if in fictive area
-        curKeyValue = currentState > records.size() ? INT_MAX + 1 : records[currentState - 1]->keyValue;
+        curKeyValue = currentState > records.size() ? INT_MAX + 1 : records[searchResult.position]->keyValue;
 
         if (curKeyValue == keyValue) {
             //Successful search
@@ -36,6 +36,9 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
     }
 
     //Failure
+    if(searchResult.position > INT_MAX){
+        searchResult.position = 0;
+    }
     searchResult.value = records[searchResult.position];
     return searchResult;
 }
@@ -43,4 +46,15 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
 IndexRecord *IndexBlock::get(unsigned int keyValue) {
     auto searchResult = findKey(keyValue);
     return searchResult.success ? searchResult.value : nullptr;
+}
+
+bool IndexBlock::remove(unsigned int keyValue) {
+    auto searchResult = findKey(keyValue);
+    if(searchResult.success){
+        records.erase(records.begin() + searchResult.position);
+        return true;
+    }
+    else{
+        return false;
+    }
 }
