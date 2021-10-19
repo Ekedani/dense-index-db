@@ -47,7 +47,7 @@ public:
     bool remove(unsigned int keyValue){
         auto searchResult = findKey(keyValue);
         if(searchResult.success){
-
+            records.erase(records.begin() + searchResult.position);
             return true;
         }
         else{
