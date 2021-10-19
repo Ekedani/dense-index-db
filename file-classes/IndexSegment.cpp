@@ -27,6 +27,7 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
         }
         if(delta == 0){
             //One more iteration to check delta == 0 value
+            searchResult.position--;
             break;
         }
 
@@ -52,6 +53,22 @@ bool IndexBlock::remove(unsigned int keyValue) {
     auto searchResult = findKey(keyValue);
     if(searchResult.success){
         records.erase(records.begin() + searchResult.position);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool IndexBlock::add(unsigned int keyValue, unsigned int dataPointer) {
+    auto searchResult = findKey(keyValue);
+    if(!searchResult.success){
+        auto vecIterator = records.begin() + searchResult.position;
+        if(searchResult.value->keyValue < keyValue) {
+            vecIterator += 1;
+        }
+        auto newRecord = new IndexRecord{keyValue, dataPointer};
+        records.insert(vecIterator, newRecord);
         return true;
     }
     else{

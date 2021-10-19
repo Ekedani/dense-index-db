@@ -42,19 +42,11 @@ public:
     bool remove(unsigned int keyValue);
 
     //Returns true if insertion is successful
-    bool add(unsigned int keyValue, unsigned int dataPointer){
-        auto searchResult = findKey(keyValue);
-        if(!searchResult.success){
-            auto vecIterator = records.begin() + searchResult.position;
-            if(searchResult.value->keyValue < keyValue) {
-                vecIterator += 1;
-            }
-            auto newRecord = new IndexRecord{keyValue, dataPointer};
-            records.insert(vecIterator, newRecord);
-            return true;
-        }
-        else{
-            return false;
+    bool add(unsigned int keyValue, unsigned int dataPointer);
+
+    void outputRecords(){
+        for (auto obj : records) {
+            cout << "Key: " << obj->keyValue << ", Ptr: " << obj->dataPointer << '\n';
         }
     }
 };
