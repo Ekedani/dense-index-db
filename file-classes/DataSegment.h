@@ -33,6 +33,9 @@ public:
         while(!filePtr.eof()){
             string curDataLine;
             getline(filePtr, curDataLine);
+            if(curDataLine.empty()){
+                continue;
+            }
             auto newDataRecord = new DataRecord;
             newDataRecord->parseString(curDataLine);
             fileData.push_back(newDataRecord);
