@@ -6,79 +6,32 @@
 
 using namespace std;
 
+//Program representation of a data-file string
 struct DataRecord {
     unsigned int keyValue;
     string dataValue;
     bool notDeleted;
 
-    void parseString(string dataLine){
-        this->keyValue = stoi(dataLine.substr(0, dataLine.find(',')));
-        dataLine.erase(0, dataLine.find(',') + 1);
-        this->dataValue = dataLine.substr(1, dataLine.find("\","));
-        dataLine.erase(0, dataLine.find("\",") + 2);
-        this->notDeleted = stoi(dataLine);
-    }
+    void parseString(string dataLine);
 };
 
+//Program representation of a data-file
 class DataSegment {
 private:
     vector<DataRecord *> fileData;
 public:
-    DataSegment() {
-    }
+    DataSegment();
 
-    void readFile(){
-        ifstream filePtr;
-        filePtr.open("D:\\Programming\\dense-index-db\\data\\data_seg.csv");
-        while(!filePtr.eof()){
-            string curDataLine;
-            getline(filePtr, curDataLine);
-            if(curDataLine.empty()){
-                continue;
-            }
-            auto newDataRecord = new DataRecord;
-            newDataRecord->parseString(curDataLine);
-            fileData.push_back(newDataRecord);
-        }
-        filePtr.close();
-    }
+    //File handling methods
+    void readFile();
+    void saveFile();
 
-    void saveFile() {
-        ofstream filePtr;
-        filePtr.open("D:\\Programming\\dense-index-db\\data\\data_seg.csv");
-        for (auto obj : fileData) {
-            filePtr << obj->keyValue << ',' << '"' << obj->dataValue << '"' << ','
-                    << obj->notDeleted << '\n';
-        }
-        filePtr.close();
-    }
+    //Database methods
+    unsigned int add(unsigned int keyValue, string dataValue);
+    DataRecord *get(unsigned int dataPointer);
+    void remove(unsigned int dataPointer);
+    void edit(unsigned int dataPointer, string dataValue);
 
-    unsigned int add(unsigned int keyValue, string dataValue) {
-        auto newRecord = new DataRecord{keyValue, std::move(dataValue), true};
-        fileData.push_back(newRecord);
-        saveFile();
-        return fileData.size() - 1;
-    }
-
-    DataRecord *get(unsigned int dataPointer) {
-        return fileData[dataPointer];
-    }
-
-    void remove(unsigned int dataPointer) {
-        fileData[dataPointer]->notDeleted = false;
-        saveFile();
-    }
-
-    void edit(unsigned int dataPointer, string dataValue) {
-        fileData[dataPointer]->dataValue = std::move(dataValue);
-        saveFile();
-    }
-
-    void output() {
-        for (auto obj : fileData) {
-            cout << obj->keyValue << ';' << obj->dataValue << ';' << obj->notDeleted << '\n';
-        }
-    }
-
+    void output();
 };
 
