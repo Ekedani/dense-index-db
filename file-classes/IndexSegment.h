@@ -26,10 +26,12 @@ struct SearchResult {
 class IndexBlock {
 public:
     vector<IndexRecord *> records;
+
     //Uniform binary search from TAOCP
     SearchResult findKey(unsigned int keyValue);
 
 public:
+    //Block parameters
     const unsigned int MIN_KEY_VALUE;
     const unsigned int MAX_KEY_VALUE;
 
@@ -44,7 +46,7 @@ public:
     //Returns true if insertion is successful
     bool add(unsigned int keyValue, unsigned int dataPointer);
 
-    unsigned int size() const{
+    [[nodiscard]] unsigned int size() const{
         return records.size();
     }
 
@@ -105,46 +107,27 @@ public:
     }
 
     IndexSegment() {
+        //Creating new overflow area
         overflowArea = new IndexBlock(0, MAX_KEY_VALUE);
-        this->readFile();
+
+        //Creating new blocks
+        unsigned int leftBorder = 0;
+        const unsigned int BLOCK_STEP = MAX_KEY_VALUE / NUMBER_OF_BLOCKS;
+        for (int blockCounter = 0; blockCounter < NUMBER_OF_BLOCKS; ++blockCounter) {
+            auto block = new IndexBlock(leftBorder, leftBorder + BLOCK_STEP);
+            leftBorder += BLOCK_STEP;
+            this->blocks.push_back(block);
+        }
+
+        //Reading file
+        //this->readFile();
     }
 
-    bool add(unsigned int keyValue, unsigned int dataPointer){
-        for(auto block : blocks){
-            if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
-                if(block->size() < MAX_BLOCK_SIZE){
-                    return block->add(keyValue, dataPointer);
-                }
-                else{
-                    return overflowArea->add(keyValue, dataPointer);
-                }
-            }
-        }
-    }
+    bool add(unsigned int keyValue, unsigned int dataPointer);
 
-    IndexRecord* get(unsigned int keyValue){
-        for(auto block : blocks){
-            if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
-                auto result = block->get(keyValue);
-                if(result == nullptr){
-                    result = overflowArea->get(keyValue);
-                }
-                return result;
-            }
-        }
-    }
+    IndexRecord* get(unsigned int keyValue);
 
-    bool remove(unsigned int keyValue){
-        for(auto block : blocks){
-            if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
-                auto result = block->remove(keyValue);
-                if(!result){
-                    result = overflowArea->remove(keyValue);
-                }
-                return result;
-            }
-        }
-    }
+    bool remove(unsigned int keyValue);
 
 };
 

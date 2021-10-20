@@ -8,16 +8,26 @@ IndexBlock::IndexBlock(unsigned int minKeyValue, unsigned int maxKeyValue) : MIN
                                                                                          MAX_KEY_VALUE(maxKeyValue) {}
 
 SearchResult IndexBlock::findKey(unsigned int keyValue) {
-    unsigned int currentState = records.size() / 2 + 1 ;
+    //If block is empty
+    if(records.empty()){
+        auto result = SearchResult();
+        result.success = false;
+        result.position = 0;
+        result.value = new IndexRecord;
+        result.value->keyValue = INT_MAX;
+        return result;
+    }
+
+    long long currentState = ceil(records.size() / 2.0);
     unsigned int delta = records.size() / 2;
     SearchResult searchResult{};
 
     while (delta >= 0) {
         searchResult.position = currentState ? currentState - 1 : currentState;
-        unsigned int curKeyValue;
+        long long curKeyValue;
 
         //Check if in fictive area
-        curKeyValue = currentState > records.size() ? INT_MAX + 1 : records[searchResult.position]->keyValue;
+        curKeyValue = currentState > 0 ? records[searchResult.position]->keyValue : -1;
 
         if (curKeyValue == keyValue) {
             //Successful search
@@ -31,7 +41,7 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
         }
 
         //New search parameters
-        keyValue < curKeyValue ? (currentState -= (delta / 2 + 1)) : (currentState += (delta / 2 + 1));
+        keyValue < curKeyValue ? (currentState -= ceil(delta / 2.0)) : (currentState += ceil(delta / 2.0));
         delta /= 2;
     }
 
@@ -72,5 +82,51 @@ bool IndexBlock::add(unsigned int keyValue, unsigned int dataPointer) {
     }
     else{
         return false;
+    }
+}
+
+bool IndexSegment::add(unsigned int keyValue, unsigned int dataPointer) {
+    for(auto block : blocks){
+        if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
+            if(block->size() < MAX_BLOCK_SIZE){
+                auto result = block->add(keyValue, dataPointer);
+                if(result){
+                    this->saveFile();
+                }
+                return result;
+            }
+            else{
+                auto result = overflowArea->add(keyValue, dataPointer);
+                if(result){
+                    this->saveFile();
+                }
+                return result;
+            }
+        }
+    }
+}
+
+IndexRecord *IndexSegment::get(unsigned int keyValue) {
+    for(auto block : blocks){
+        if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
+            auto result = block->get(keyValue);
+            if(result == nullptr){
+                result = overflowArea->get(keyValue);
+            }
+            return result;
+        }
+    }
+}
+
+bool IndexSegment::remove(unsigned int keyValue) {
+    for(auto block : blocks){
+        if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
+            auto result = block->remove(keyValue);
+            if(!result){
+                result = overflowArea->remove(keyValue);
+            }
+            this->saveFile();
+            return result;
+        }
     }
 }
