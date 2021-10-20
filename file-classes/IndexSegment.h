@@ -50,6 +50,10 @@ public:
         return records.size();
     }
 
+    vector<IndexRecord *> getRecords() const{
+        return records;
+    }
+
     void outputRecords(){
         for (auto obj : records) {
             cout << "Key: " << obj->keyValue << ", Ptr: " << obj->dataPointer << '\n';
@@ -58,7 +62,7 @@ public:
 };
 
 class IndexSegment {
-private:
+public:
     //Configuration of index segment
     static const unsigned int MAX_KEY_VALUE = INT_MAX;
     static const unsigned int MAX_BLOCK_SIZE = 1500;
@@ -102,9 +106,7 @@ public:
         fileStream.close();
     }
 
-    void saveFile() {
-
-    }
+    void saveFile();
 
     IndexSegment() {
         //Creating new overflow area
@@ -115,7 +117,7 @@ public:
         const unsigned int BLOCK_STEP = MAX_KEY_VALUE / NUMBER_OF_BLOCKS;
         for (int blockCounter = 0; blockCounter < NUMBER_OF_BLOCKS; ++blockCounter) {
             auto block = new IndexBlock(leftBorder, leftBorder + BLOCK_STEP);
-            leftBorder += BLOCK_STEP;
+            leftBorder += BLOCK_STEP + 1;
             this->blocks.push_back(block);
         }
 
@@ -128,6 +130,13 @@ public:
     IndexRecord* get(unsigned int keyValue);
 
     bool remove(unsigned int keyValue);
+
+    void output(){
+        for (int i = 0; i < NUMBER_OF_BLOCKS; ++i) {
+            cout << "Block number: " << i << '\n';
+            blocks[i]->outputRecords();
+        }
+    }
 
 };
 

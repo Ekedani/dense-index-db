@@ -130,3 +130,23 @@ bool IndexSegment::remove(unsigned int keyValue) {
         }
     }
 }
+
+void IndexSegment::saveFile() {
+    ofstream filePtr;
+    filePtr.open("D:\\Programming\\dense-index-db\\data\\index_seg.csv");
+
+    //Saving blocks
+    for (auto block : blocks) {
+        for(auto obj : block->getRecords()){
+            filePtr << obj->keyValue << ',' << obj->dataPointer << '\n';
+        }
+    }
+
+    //
+    filePtr << "===OVERFLOW_AREA===\n";
+    for (auto obj : overflowArea->getRecords()){
+        filePtr << obj->keyValue << ',' << obj->dataPointer << '\n';
+    }
+
+    filePtr.close();
+}
