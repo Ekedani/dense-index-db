@@ -15,9 +15,8 @@ int main() {
     //testBlock.add(0, 0);
     //testBlock.add(56, 54);
     cout << testBlock.records.size() << '\n';
-    testBlock.add(0, 0);
-    testBlock.add(16, 16);
-    testBlock.add(18, 18);
+    //testBlock.add(0, 0);
+    //testBlock.add(16, 16);
     testBlock.add(INT_MAX, 54);
     testBlock.outputRecords();
     return 0;

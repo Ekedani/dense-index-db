@@ -44,6 +44,10 @@ public:
     //Returns true if insertion is successful
     bool add(unsigned int keyValue, unsigned int dataPointer);
 
+    unsigned int size() const{
+        return records.size();
+    }
+
     void outputRecords(){
         for (auto obj : records) {
             cout << "Key: " << obj->keyValue << ", Ptr: " << obj->dataPointer << '\n';
@@ -103,6 +107,43 @@ public:
     IndexSegment() {
         overflowArea = new IndexBlock(0, MAX_KEY_VALUE);
         this->readFile();
+    }
+
+    bool add(unsigned int keyValue, unsigned int dataPointer){
+        for(auto block : blocks){
+            if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
+                if(block->size() < MAX_BLOCK_SIZE){
+                    return block->add(keyValue, dataPointer);
+                }
+                else{
+                    return overflowArea->add(keyValue, dataPointer);
+                }
+            }
+        }
+    }
+
+    IndexRecord* get(unsigned int keyValue){
+        for(auto block : blocks){
+            if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
+                auto result = block->get(keyValue);
+                if(result == nullptr){
+                    result = overflowArea->get(keyValue);
+                }
+                return result;
+            }
+        }
+    }
+
+    bool remove(unsigned int keyValue){
+        for(auto block : blocks){
+            if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
+                auto result = block->remove(keyValue);
+                if(!result){
+                    result = overflowArea->remove(keyValue);
+                }
+                return result;
+            }
+        }
     }
 
 };

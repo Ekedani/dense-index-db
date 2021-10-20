@@ -27,7 +27,6 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
         }
         if(delta == 0){
             //One more iteration to check delta == 0 value
-            searchResult.position--;
             break;
         }
 
