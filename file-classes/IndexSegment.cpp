@@ -97,6 +97,12 @@ unsigned int IndexBlock::size() const {
     return records.size();
 }
 
+void IndexBlock::outputRecords() {
+    for (auto obj : records) {
+        cout << "Key: " << obj->keyValue << ", Ptr: " << obj->dataPointer << '\n';
+    }
+}
+
 bool IndexSegment::add(unsigned int keyValue, unsigned int dataPointer) {
     for(auto block : blocks){
         if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
@@ -145,7 +151,7 @@ bool IndexSegment::remove(unsigned int keyValue) {
 
 void IndexSegment::saveFile() {
     ofstream filePtr;
-    filePtr.open("D:\\Programming\\dense-index-db\\data\\index_seg.csv");
+    filePtr.open(R"(D:\Programming\dense-index-db\data\index_seg.csv)");
 
     //Saving blocks
     for (auto block : blocks) {
@@ -185,6 +191,41 @@ void IndexSegment::output() {
         cout << "Block number: " << i << '\n';
         blocks[i]->outputRecords();
     }
+}
+
+void IndexSegment::readFile() {
+    ifstream filePtr;
+    filePtr.open(R"(D:\Programming\dense-index-db\data\index_seg.csv)");
+    string curLine;
+    getline(filePtr, curLine);
+    unsigned int currentBlock = 0;
+
+    //Fill main blocks
+    while (curLine != "===OVERFLOW_AREA===") {
+        auto curIndexRecord = new IndexRecord;
+        curIndexRecord->parseLine(curLine);
+
+        //Selecting new blocks
+        while (!(curIndexRecord->keyValue >= blocks[currentBlock]->MIN_KEY_VALUE &&
+                 curIndexRecord->keyValue <= blocks[currentBlock]->MAX_KEY_VALUE)) {
+            currentBlock++;
+        }
+
+        blocks[currentBlock]->pushRecord(curIndexRecord);
+        getline(filePtr, curLine);
+    }
+
+    //Fill overflow area
+    while (!filePtr.eof()) {
+        getline(filePtr, curLine);
+        if(curLine.empty()){
+            continue;
+        }
+        auto curIndexRecord = new IndexRecord;
+        curIndexRecord->parseLine(curLine);
+        overflowArea->pushRecord(curIndexRecord);
+    }
+    filePtr.close();
 }
 
 void IndexRecord::parseLine(string indexLine) {

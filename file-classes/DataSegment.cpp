@@ -2,7 +2,7 @@
 
 void DataSegment::saveFile() {
     ofstream filePtr;
-    filePtr.open("D:\\Programming\\dense-index-db\\data\\data_seg.csv");
+    filePtr.open(R"(D:\Programming\dense-index-db\data\data_seg.csv)");
     for (auto obj : fileData) {
         filePtr << obj->keyValue << ',' << '"' << obj->dataValue << '"' << ','
                 << obj->notDeleted << '\n';
@@ -39,7 +39,7 @@ DataRecord *DataSegment::get(unsigned int dataPointer) {
 
 void DataSegment::readFile() {
     ifstream filePtr;
-    filePtr.open("D:\\Programming\\dense-index-db\\data\\data_seg.csv");
+    filePtr.open(R"(D:\Programming\dense-index-db\data\data_seg.csv)");
     while (!filePtr.eof()) {
         string curDataLine;
         getline(filePtr, curDataLine);
