@@ -6,15 +6,12 @@
 
 using namespace std;
 
+
 struct IndexRecord {
     unsigned int keyValue;
     unsigned int dataPointer;
 
-    void parseLine(string indexLine) {
-        this->keyValue = stoi(indexLine.substr(0, indexLine.find(';') + 1));
-        indexLine.erase(0, indexLine.find(';') + 1);
-        this->dataPointer = stoi(indexLine.substr(0, indexLine.find(';') + 1));
-    }
+    void parseLine(string indexLine);
 };
 
 struct SearchResult {
@@ -24,7 +21,7 @@ struct SearchResult {
 };
 
 class IndexBlock {
-public:
+private:
     vector<IndexRecord *> records;
 
     //Uniform binary search from TAOCP
@@ -38,7 +35,7 @@ public:
     IndexBlock(unsigned int minKeyValue, unsigned int maxKeyValue);
 
     //Returns pointer to record with given key or nullptr
-    IndexRecord* get(unsigned int keyValue);
+    IndexRecord *get(unsigned int keyValue);
 
     //Returns true if removal is successful
     bool remove(unsigned int keyValue);
@@ -46,15 +43,14 @@ public:
     //Returns true if insertion is successful
     bool add(unsigned int keyValue, unsigned int dataPointer);
 
-    [[nodiscard]] unsigned int size() const{
-        return records.size();
-    }
+    [[nodiscard]] unsigned int size() const;
 
-    vector<IndexRecord *> getRecords() const{
-        return records;
-    }
+    vector<IndexRecord *> getRecords() const;
 
-    void outputRecords(){
+    //To read .csv files faster
+    void pushRecord(IndexRecord *newIndexRecord);
+
+    void outputRecords() {
         for (auto obj : records) {
             cout << "Key: " << obj->keyValue << ", Ptr: " << obj->dataPointer << '\n';
         }
@@ -73,70 +69,52 @@ public:
     IndexBlock *overflowArea;
 public:
     void readFile() {
-        ifstream fileStream;
-        fileStream.open("/* Way to file*/");
-        const unsigned int BLOCK_STEP = INT_MAX / NUMBER_OF_BLOCKS;
-        auto currentBlock = new IndexBlock(0, BLOCK_STEP);
-        unsigned int currentBlockNum = 1;
-        while (!fileStream.eof()) {
-            //Get string of data
-            string dataLine;
-            getline(fileStream, dataLine);
-            auto currentIndexLine = new IndexRecord;
-            currentIndexLine->parseLine(dataLine);
+        ifstream filePtr;
+        filePtr.open(R"(D:\Programming\dense-index-db\data\index_seg.csv)");
+        string curLine;
+        getline(filePtr, curLine);
+        unsigned int currentBlock = 0;
 
-            if (currentIndexLine->keyValue < currentBlock->MIN_KEY_VALUE ||
-                currentIndexLine->keyValue > currentBlock->MAX_KEY_VALUE) {
-                //Not in block range
-                if (currentBlockNum < NUMBER_OF_BLOCKS) {
-                    //Create another block
-                    currentBlock = new IndexBlock(currentBlock->MAX_KEY_VALUE + 1,
-                                                  currentBlock->MAX_KEY_VALUE + BLOCK_STEP);
-                    this->blocks.push_back(currentBlock);
-                    currentBlockNum++;
-                } else {
-                    currentBlock = this->overflowArea;
-                }
+        //Fill main blocks
+        while (curLine != "===OVERFLOW_AREA===") {
+            auto curIndexRecord = new IndexRecord;
+            curIndexRecord->parseLine(curLine);
+
+            //Selecting new blocks
+            while (!(curIndexRecord->keyValue >= blocks[currentBlock]->MIN_KEY_VALUE &&
+                     curIndexRecord->keyValue <= blocks[currentBlock]->MAX_KEY_VALUE)) {
+                currentBlock++;
             }
 
+            blocks[currentBlock]->pushRecord(curIndexRecord);
+            getline(filePtr, curLine);
         }
-        if (currentBlockNum < NUMBER_OF_BLOCKS) {
 
+        //Fill overflow area
+        while (!filePtr.eof()) {
+            getline(filePtr, curLine);
+            if(curLine.empty()){
+                continue;
+            }
+            auto curIndexRecord = new IndexRecord;
+            curIndexRecord->parseLine(curLine);
+            overflowArea->pushRecord(curIndexRecord);
         }
-        fileStream.close();
+        filePtr.close();
     }
 
     void saveFile();
 
-    IndexSegment() {
-        //Creating new overflow area
-        overflowArea = new IndexBlock(0, MAX_KEY_VALUE);
+    IndexSegment();
 
-        //Creating new blocks
-        unsigned int leftBorder = 0;
-        const unsigned int BLOCK_STEP = MAX_KEY_VALUE / NUMBER_OF_BLOCKS;
-        for (int blockCounter = 0; blockCounter < NUMBER_OF_BLOCKS; ++blockCounter) {
-            auto block = new IndexBlock(leftBorder, leftBorder + BLOCK_STEP);
-            leftBorder += BLOCK_STEP + 1;
-            this->blocks.push_back(block);
-        }
-
-        //Reading file
-        //this->readFile();
-    }
-
+    //Database methods
     bool add(unsigned int keyValue, unsigned int dataPointer);
 
-    IndexRecord* get(unsigned int keyValue);
+    IndexRecord *get(unsigned int keyValue);
 
     bool remove(unsigned int keyValue);
 
-    void output(){
-        for (int i = 0; i < NUMBER_OF_BLOCKS; ++i) {
-            cout << "Block number: " << i << '\n';
-            blocks[i]->outputRecords();
-        }
-    }
+    void output();
 
 };
 

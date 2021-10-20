@@ -60,7 +60,7 @@ DataSegment::DataSegment() {
 void DataRecord::parseString(string dataLine) {
     this->keyValue = stoi(dataLine.substr(0, dataLine.find(',')));
     dataLine.erase(0, dataLine.find(',') + 1);
-    this->dataValue = dataLine.substr(1, dataLine.find("\","));
+    this->dataValue = dataLine.substr(1, dataLine.find("\",") - 1);
     dataLine.erase(0, dataLine.find("\",") + 2);
     this->notDeleted = stoi(dataLine);
 }

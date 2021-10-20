@@ -85,6 +85,18 @@ bool IndexBlock::add(unsigned int keyValue, unsigned int dataPointer) {
     }
 }
 
+void IndexBlock::pushRecord(IndexRecord *newIndexRecord) {
+    records.push_back(newIndexRecord);
+}
+
+vector<IndexRecord *> IndexBlock::getRecords() const {
+    return records;
+}
+
+unsigned int IndexBlock::size() const {
+    return records.size();
+}
+
 bool IndexSegment::add(unsigned int keyValue, unsigned int dataPointer) {
     for(auto block : blocks){
         if(block->MIN_KEY_VALUE <= keyValue && block->MAX_KEY_VALUE >= keyValue){
@@ -149,4 +161,34 @@ void IndexSegment::saveFile() {
     }
 
     filePtr.close();
+}
+
+IndexSegment::IndexSegment() {
+    //Creating new overflow area
+    overflowArea = new IndexBlock(0, MAX_KEY_VALUE);
+
+    //Creating new blocks
+    unsigned int leftBorder = 0;
+    const unsigned int BLOCK_STEP = MAX_KEY_VALUE / NUMBER_OF_BLOCKS;
+    for (int blockCounter = 0; blockCounter < NUMBER_OF_BLOCKS; ++blockCounter) {
+        auto block = new IndexBlock(leftBorder, leftBorder + BLOCK_STEP);
+        leftBorder += BLOCK_STEP + 1;
+        this->blocks.push_back(block);
+    }
+
+    //Reading file
+    this->readFile();
+}
+
+void IndexSegment::output() {
+    for (int i = 0; i < NUMBER_OF_BLOCKS; ++i) {
+        cout << "Block number: " << i << '\n';
+        blocks[i]->outputRecords();
+    }
+}
+
+void IndexRecord::parseLine(string indexLine) {
+    this->keyValue = stoi(indexLine.substr(0, indexLine.find(',')));
+    indexLine.erase(0, indexLine.find(',') + 1);
+    this->dataPointer = stoi(indexLine);
 }
