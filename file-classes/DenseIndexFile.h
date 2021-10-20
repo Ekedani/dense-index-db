@@ -48,4 +48,11 @@ public:
         dataSegment->edit(indexSearchResult->dataPointer, std::move(dataValue));
     }
 
+    void output(){
+        cout << "Index segment: " << '\n';
+        indexSegment->output();
+        cout << "Data segment: " << '\n';
+        dataSegment->output();
+    }
+
 };
