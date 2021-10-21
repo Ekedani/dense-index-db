@@ -32,6 +32,5 @@ public:
     void remove(unsigned int dataPointer);
     void edit(unsigned int dataPointer, string dataValue);
 
-    void output();
 };
 

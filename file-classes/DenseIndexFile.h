@@ -19,7 +19,6 @@ public:
         return indexSegment->statistics;
     }
 
-    void output();
     void outputLimits(){
         indexSegment->outputLimits();
     }

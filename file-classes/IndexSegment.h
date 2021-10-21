@@ -81,7 +81,6 @@ public:
     IndexRecord *get(unsigned int keyValue);
     bool remove(unsigned int keyValue);
 
-    void output();
 
     void outputLimits(){
         for (int i = 0; i < blocks.size(); ++i) {

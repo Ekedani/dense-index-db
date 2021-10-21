@@ -33,16 +33,10 @@ bool DenseIndexFile::edit(unsigned int keyValue, string dataValue) {
         return false;
     }
     dataSegment->edit(indexSearchResult->dataPointer, std::move(dataValue));
+    return true;
 }
 
 DenseIndexFile::DenseIndexFile() {
     indexSegment = new IndexSegment();
     dataSegment = new DataSegment();
-}
-
-void DenseIndexFile::output() {
-    cout << "Index segment: " << '\n';
-    indexSegment->output();
-    cout << "Data segment: " << '\n';
-    dataSegment->output();
 }

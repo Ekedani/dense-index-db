@@ -203,13 +203,6 @@ IndexSegment::IndexSegment() {
     this->statistics = 0;
 }
 
-void IndexSegment::output() {
-    for (int i = 0; i < NUMBER_OF_BLOCKS; ++i) {
-        cout << "Block number: " << i << '\n';
-        blocks[i]->outputRecords();
-    }
-}
-
 void IndexSegment::readFile() {
     ifstream filePtr;
     filePtr.open(R"(D:\Programming\dense-index-db\data\index_seg.csv)");

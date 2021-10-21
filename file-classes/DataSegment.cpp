@@ -27,12 +27,6 @@ void DataSegment::edit(unsigned int dataPointer, string dataValue) {
     saveFile();
 }
 
-void DataSegment::output() {
-    for (auto obj : fileData) {
-        cout << obj->keyValue << ';' << obj->dataValue << ';' << obj->notDeleted << '\n';
-    }
-}
-
 DataRecord *DataSegment::get(unsigned int dataPointer) {
     return fileData[dataPointer];
 }
