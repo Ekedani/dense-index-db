@@ -16,5 +16,8 @@ public:
     bool edit(unsigned int keyValue, string dataValue);
 
     void output();
+    void outputLimits(){
+        indexSegment->outputLimits();
+    }
 
 };

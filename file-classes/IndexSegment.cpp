@@ -178,7 +178,15 @@ IndexSegment::IndexSegment() {
     unsigned int leftBorder = 0;
     const unsigned int BLOCK_STEP = MAX_KEY_VALUE / NUMBER_OF_BLOCKS;
     for (int blockCounter = 0; blockCounter < NUMBER_OF_BLOCKS; ++blockCounter) {
-        auto block = new IndexBlock(leftBorder, leftBorder + BLOCK_STEP);
+        IndexBlock* block;
+
+        if(blockCounter != NUMBER_OF_BLOCKS - 1){
+            block = new IndexBlock(leftBorder, leftBorder + BLOCK_STEP);
+        }
+        else{
+            block = new IndexBlock(leftBorder, MAX_KEY_VALUE);
+        }
+
         leftBorder += BLOCK_STEP + 1;
         this->blocks.push_back(block);
     }

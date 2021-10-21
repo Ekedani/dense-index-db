@@ -57,8 +57,8 @@ class IndexSegment {
 public:
     //Configuration of index segment
     static const unsigned int MAX_KEY_VALUE = INT_MAX;
-    static const unsigned int MAX_BLOCK_SIZE = 1500;
-    static const unsigned int NUMBER_OF_BLOCKS = 4;
+    static const unsigned int MAX_BLOCK_SIZE = 2160;
+    static const unsigned int NUMBER_OF_BLOCKS = 6;
 
     //Data
     vector<IndexBlock *> blocks;
@@ -77,6 +77,13 @@ public:
     bool remove(unsigned int keyValue);
 
     void output();
+
+    void outputLimits(){
+        for (int i = 0; i < blocks.size(); ++i) {
+            cout << "Block number " << i << ": " << "MIN: " << blocks[i]->MIN_KEY_VALUE << ", MAX: " << blocks[i]->MAX_KEY_VALUE << '\n';
+            cout << "Block size: " << blocks[i]->size() << '\n';
+        }
+    }
 
 };
 
