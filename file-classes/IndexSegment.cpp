@@ -162,7 +162,7 @@ void IndexSegment::saveFile() {
     }
 
     //
-    filePtr << "===OVERFLOW_AREA===\n";
+    filePtr << "#Overflow_Area\n";
     for (auto obj : overflowArea->getRecords()){
         filePtr << obj->keyValue << ',' << obj->dataPointer << '\n';
     }
@@ -202,7 +202,7 @@ void IndexSegment::readFile() {
     unsigned int currentBlock = 0;
 
     //Fill main blocks
-    while (curLine != "===OVERFLOW_AREA===") {
+    while (curLine != "#Overflow_Area") {
         auto curIndexRecord = new IndexRecord;
         curIndexRecord->parseLine(curLine);
 
