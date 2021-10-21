@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -5,7 +7,6 @@
 #include <cmath>
 
 using namespace std;
-
 
 struct IndexRecord {
     unsigned int keyValue;
@@ -31,6 +32,8 @@ public:
     //Block parameters
     const unsigned int MIN_KEY_VALUE;
     const unsigned int MAX_KEY_VALUE;
+
+    long long statistics;
 
     IndexBlock(unsigned int minKeyValue, unsigned int maxKeyValue);
 
@@ -60,6 +63,8 @@ public:
     static const unsigned int MAX_BLOCK_SIZE = 2160;
     static const unsigned int NUMBER_OF_BLOCKS = 6;
 
+    long long statistics;
+
     //Data
     vector<IndexBlock *> blocks;
     IndexBlock *overflowArea;
@@ -83,6 +88,8 @@ public:
             cout << "Block number " << i << ": " << "MIN: " << blocks[i]->MIN_KEY_VALUE << ", MAX: " << blocks[i]->MAX_KEY_VALUE << '\n';
             cout << "Block size: " << blocks[i]->size() << '\n';
         }
+        cout << "Overflow area: " << "MIN: " << overflowArea->MIN_KEY_VALUE << ", MAX: " << overflowArea->MAX_KEY_VALUE << '\n';
+        cout << "Block size: " << overflowArea->size() << '\n';
     }
 
 };

@@ -15,6 +15,10 @@ public:
     bool remove(unsigned int keyValue);
     bool edit(unsigned int keyValue, string dataValue);
 
+    long long getStatistics(){
+        return indexSegment->statistics;
+    }
+
     void output();
     void outputLimits(){
         indexSegment->outputLimits();

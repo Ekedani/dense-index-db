@@ -3,6 +3,10 @@
 
 int main() {
     auto testFile = new DenseIndexFile;
-    testFile->outputLimits();
+    int keyToSearch;
+    cout << "Input key to search: "; cin >> keyToSearch;
+    testFile->get(keyToSearch);
+    cout << testFile->getStatistics() << '\n';
+
     return 0;
 }
