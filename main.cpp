@@ -4,13 +4,14 @@
 
 int main() {
     auto testFile = new DenseIndexFile;
-    auto random = new RandomDataGenerator;
-    auto result = testFile->get(18341254);
-    cout << result;
-    /*for (int i = 0; i < 5000; ++i) {
-        auto keyValue = random->generateRandomKey(i);
-        auto dataValue = random->generateRandomData(i);
-        testFile->add(keyValue, dataValue);
-    }*/
+    int successCounter = 0;
+    while (successCounter < 10000){
+        auto keyValue = RandomDataGenerator::generateRandomKey(successCounter);
+        auto dataValue = RandomDataGenerator::generateRandomData(successCounter);
+        auto result = testFile->add(keyValue, dataValue);
+        if(result){
+            successCounter++;
+        }
+    }
     return 0;
 }

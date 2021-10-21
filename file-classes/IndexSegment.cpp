@@ -45,10 +45,11 @@ SearchResult IndexBlock::findKey(unsigned int keyValue) {
         delta /= 2;
     }
 
-    //Failure
+    //Check if position overflow
     if(searchResult.position > INT_MAX){
         searchResult.position = 0;
     }
+    //Failure
     searchResult.value = records[searchResult.position];
     return searchResult;
 }
