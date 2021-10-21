@@ -1,3 +1,5 @@
+#pragma once
+
 #include "DataSegment.h"
 #include "IndexSegment.h"
 
